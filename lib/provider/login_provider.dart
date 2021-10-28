@@ -31,14 +31,18 @@ class LogInProvider extends ChangeNotifier{
   TextEditingController _userNameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
-  GlobalKey<ScaffoldState> loginScaffoldKey = GlobalKey<ScaffoldState>();
-  GlobalKey<FormState> loginGlobalKey = GlobalKey<FormState>();
   LoginService _loginServices =LoginService();
 
 
   String token;
+  String email,password;
 
-  bool login=false;
+  changeEmail(value){
+    email=value;
+  }
+  changePassword(value){
+    password=value;
+  }
 
 
 
@@ -49,13 +53,20 @@ class LogInProvider extends ChangeNotifier{
     _passwordController.dispose();
     super.dispose();
   }
+
+  bool lodedIn=false;
+  changeLoaded(value){
+    lodedIn=value;
+    notifyListeners();
+  }
+
   LoginModel userInfo;
 
-  loginFunction(context) async {
-    login=true;
+  loginFunction(context,loginScaffoldKey) async {
+    changeLoaded(true);
     try {
       await _loginServices.registerMethod(
-          userNameController.text,passwordController.text
+          email,password
       );
       if (_loginServices.loginInfo.statusCode == 200) {
         var jsonData = _loginServices.loginInfo.body;
@@ -66,10 +77,10 @@ class LogInProvider extends ChangeNotifier{
           userNameController.clear();
           passwordController.clear();
           token=userInfo.dateSet.token;
-          saveData();
-          login=false;
+          //saveData();
+          lodedIn=false;
         }else{
-          login=false;
+          lodedIn=false;
           loginScaffoldKey.currentState
               .showSnackBar(SnackBar(
             backgroundColor: purple,
@@ -81,6 +92,7 @@ class LogInProvider extends ChangeNotifier{
         }
         notifyListeners();
       } else {
+        lodedIn=false;
         print("errorsss");
         notifyListeners();
       }
@@ -100,7 +112,6 @@ class LogInProvider extends ChangeNotifier{
     } else {
       token = "";
     }
-    print("get pref");
     notifyListeners();
   }
 
@@ -109,12 +120,8 @@ class LogInProvider extends ChangeNotifier{
     SharedPreferences _pref = await SharedPreferences.getInstance();
 
     _pref.setString("token", userInfo.dateSet.token);
-    print("save pref");
 
     notifyListeners();
   }
-
-
-
 
 }

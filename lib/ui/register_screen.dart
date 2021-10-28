@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:hala/provider/main_provider.dart';
 import 'package:hala/provider/register_provider.dart';
 import 'package:hala/statics/color.dart';
-import 'package:hala/ui/login_Screen.dart';
 import 'package:hala/widgets/custom_button.dart';
 import 'package:hala/widgets/custom_text.dart';
 import 'package:hala/widgets/leading_widget.dart';
 import 'package:hala/widgets/logo.dart';
 import 'package:hala/widgets/text_feild.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:provider/provider.dart';
+
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -16,97 +16,110 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  GlobalKey<ScaffoldState> _registerScaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<FormState> _registerGlobalKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    final registerProvider =
-        Provider.of<RegisterProvider>(context, listen: true);
-    final mainProvider = Provider.of<MainProvider>(context, listen: false);
-
+    final registerProvider = Provider.of<RegisterProvider>(context, listen: true);
     return Scaffold(
-      key: registerProvider.registerScaffoldKey,
-      body: Form(
-        key: registerProvider.registerGlobalKey,
-        child: ListView(
-          children: [
-            Center(
-              child: Container(
-                width: MediaQuery.of(context).size.width * .9,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Logo(
-                      height: MediaQuery.of(context).size.height / 5,
-                      width: MediaQuery.of(context).size.width / 4,
-                    ),
-                    Container(
-                        width: double.infinity,
-                        child: Text(
-                          "الاسم بالكامل",
-                          textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 16, color: darkGray),
-                        )),
-                    CusomTextFeild(
-                      hintText: "fullName",
-                      password: false,
-                      controller: registerProvider.userNameController,
-                    ),
-                    Container(
-                        width: double.infinity,
-                        child: Text(
-                          "أدخل الايميل",
-                          textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 16, color: darkGray),
-                        )),
-                    CusomTextFeild(
-                      hintText: "usermail@gmail.com",
-                      password: false,
-                      controller: registerProvider.emailController,
-                    ),
-                    Container(
-                        width: double.infinity,
-                        child: Text(
-                          "كلمة المرور",
-                          textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 16, color: darkGray),
-                        )),
-                    CusomTextFeild(
-                      hintText: "password",
-                      password: false,
-                      controller: registerProvider.passwordController,
-                    ),
-                    SizedBox(height: 30),
-                    Container(
-                        width: double.infinity,
-                        child: Text(
-                          "اختر نوع الحساب",
-                          textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 16, color: darkGray),
-                        )),
-                    dropDownReason(context, registerProvider),
-                    SizedBox(height: 40),
-                    CustomButton(
-                      text: "تسجيل حساب جديد",
-                      callback: () {
-                        if (registerProvider.registerGlobalKey.currentState
-                            .validate()) {
-                          registerProvider.registerFunction(context);
-                        } else {
-                          registerProvider.registerScaffoldKey.currentState
-                              .showSnackBar(SnackBar(
-                            backgroundColor: purple,
-                            content: CustomText(
-                              text: "برجاء اكمل البيانات",
-                            ),
-                          ));
-                        }
-                      },
-                    ),
-                    SizedBox(height: 40),
-                  ],
+    key: _registerScaffoldKey,
+      body: ModalProgressHUD(
+        inAsyncCall: registerProvider.registred,
+        color: purple,
+        child: Form(
+         key: _registerGlobalKey,
+          child: ListView(
+            children: [
+              Center(
+                child: Container(
+                  width: MediaQuery.of(context).size.width * .9,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Logo(
+                        height: MediaQuery.of(context).size.height / 5,
+                        width: MediaQuery.of(context).size.width / 4,
+                      ),
+                      Container(
+                          width: double.infinity,
+                          child: Text(
+                            "الاسم بالكامل",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(fontSize: 16, color: darkGray),
+                          )),
+                      CusomTextFeild(
+                        hintText: "fullName",
+                        password: false,
+                        controller: registerProvider.userNameController,
+                        changed: (value){
+                          registerProvider.changeName(value);
+                        },
+                      ),
+                      Container(
+                          width: double.infinity,
+                          child: Text(
+                            "أدخل الايميل",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(fontSize: 16, color: darkGray),
+                          )),
+                      CusomTextFeild(
+                        hintText: "usermail@gmail.com",
+                        password: false,
+                        controller: registerProvider.emailController,
+                        changed: (value){
+                          registerProvider.changeEmail(value);
+                        },
+                      ),
+                      Container(
+                          width: double.infinity,
+                          child: Text(
+                            "كلمة المرور",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(fontSize: 16, color: darkGray),
+                          )),
+                      CusomTextFeild(
+                        hintText: "password",
+                        password: false,
+                        controller: registerProvider.passwordController,
+                        changed: (value){
+                          registerProvider.changepassword(value);
+                        },
+                      ),
+                      SizedBox(height: 30),
+                      Container(
+                          width: double.infinity,
+                          child: Text(
+                            "اختر نوع الحساب",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(fontSize: 16, color: darkGray),
+                          )),
+                      dropDownReason(context, registerProvider),
+                      SizedBox(height: 40),
+                      CustomButton(
+                        text: "تسجيل حساب جديد",
+                        callback: () {
+
+                          if (_registerGlobalKey.currentState
+                              .validate()) {
+                            registerProvider.registerFunction(context,_registerScaffoldKey);
+                          } else {
+                            _registerScaffoldKey.currentState
+                                .showSnackBar(SnackBar(
+                              backgroundColor: purple,
+                              content: CustomText(
+                                text: "برجاء اكمل البيانات",
+                              ),
+                            ));
+                          }
+                        },
+                      ),
+                      SizedBox(height: 40),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

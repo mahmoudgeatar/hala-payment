@@ -16,8 +16,7 @@ class RegisterProvider extends ChangeNotifier{
   }
 
   RegisterServices _registerServices =RegisterServices();
-  GlobalKey<ScaffoldState> registerScaffoldKey = GlobalKey<ScaffoldState>();
-  GlobalKey<FormState> registerGlobalKey = GlobalKey<FormState>();
+
 
 
 
@@ -38,6 +37,17 @@ class RegisterProvider extends ChangeNotifier{
     super.dispose();
   }
 
+  String name,emial,password;
+
+  changeName(value){
+    name=value;
+  }
+  changeEmail(value){
+    emial=value;
+  }
+  changepassword(value){
+    password=value;
+  }
 
 
  RoleModel roles;
@@ -68,11 +78,19 @@ class RegisterProvider extends ChangeNotifier{
 
   RoleModel registerstionInfo;
 
+  bool registred=false;
+  changeRegistred(value){
+    registred=value;
+    notifyListeners();
+  }
 
-  registerFunction(context) async {
+
+
+  registerFunction(context,registerScaffoldKey) async {
+    changeRegistred(true);
     try {
       await _registerServices.registerMethod(
-        userNameController.text,emailController.text,passwordController.text,dropDownIntValue
+          name,emial,password,dropDownIntValue
       );
       if (_registerServices.register.statusCode == 200) {
         var jsonData = _registerServices.register.body;
@@ -83,7 +101,9 @@ class RegisterProvider extends ChangeNotifier{
         userNameController.clear();
         emailController.clear();
         passwordController.clear();
+        registred=false;
         }else{
+          registred=false;
           registerScaffoldKey.currentState
               .showSnackBar(SnackBar(
             backgroundColor: purple,
@@ -95,6 +115,7 @@ class RegisterProvider extends ChangeNotifier{
         notifyListeners();
       } else {
         print("errorsss");
+        registred=false;
         notifyListeners();
       }
     } catch (e) {

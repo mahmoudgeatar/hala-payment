@@ -21,16 +21,14 @@ class _SplashState extends State<Splash> {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final mainProvider=Provider.of<MainProvider>(context,listen: false);
       final loginProvider=Provider.of<LogInProvider>(context,listen: false);
-      loginProvider.getData();
       Timer(
-          Duration(seconds: 3),
-              () => mainProvider.finalNavigation(context,
-                  loginProvider.token==null?LogInScreen():HomeScreen()
-          ));
+          Duration(seconds: 3), (){
+        mainProvider.finalNavigation(context, loginProvider.token==null || loginProvider.token.isEmpty?LogInScreen():HomeScreen());
+      }
+      );
     });
   }
   @override

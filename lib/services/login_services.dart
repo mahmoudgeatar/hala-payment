@@ -10,16 +10,14 @@ class LoginService{
 
   Future<LoginModel> registerMethod(email, password) async {
     Map<String, String> headers = {'Content-Type': 'application/json'};
-    final msg = jsonEncode({
+    final userData = jsonEncode({
       "email": email.toString(),
       "password": password.toString(),
     });
-
     loginInfo = await http.post(
       "$baseUrl/User/Login",
-      body: msg,
+      body: userData,
       headers: headers,
     );
-    print(loginInfo.body);
   }
 }

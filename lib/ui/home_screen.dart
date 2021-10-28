@@ -2,8 +2,27 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:hala/statics/color.dart';
 import 'package:hala/widgets/custom_text.dart';
+import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
+import '../provider/home_provider.dart';
+import '../provider/login_provider.dart';
+import '../widgets/leading_widget.dart';
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+
+  ExpandableController controller=ExpandableController();
+  @override
+  void initState() {
+    final loginProvider = Provider.of<LogInProvider>(context, listen: false);
+    final homeProvider = Provider.of<HomeProvider>(context, listen: false);
+    homeProvider.fetchAmountFunction(loginProvider.token);
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,142 +46,148 @@ class HomeScreen extends StatelessWidget {
               })
         ],
       ),
-      body: ListView(
-        children: [
-          totalCount(context),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: ListView.builder(
-                itemCount: 10,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6),
-                    child: Card(
-                      child: ExpandablePanel(
-                        //header
-                        header: Padding(
-                          padding: const EdgeInsets.only(
-                            top: 12,
-                            right: 12,
-                            left: 12
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
+      body: Consumer<HomeProvider>(
+        builder: (context,state,_){
+          return state.getAmount? LoadingWidget():ListView(
+            children: [
+              totalCount(context,state.userInfo.totalAmount),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: ListView.builder(
+                    itemCount: state.userInfo.result.dateSet.length,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      var data=state.userInfo.result.dateSet[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        child: Card(
+                          child: ExpandablePanel(
+
+                            //header
+                            header: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 12,
+                                  right: 12,
+                                  left: 12
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  CustomText(
-                                    text: "2500.00",
-                                    color: orange,
-                                    align: TextAlign.right,
-                                    size: 20,
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      CustomText(
+                                        text: data.amount.toString(),
+                                        color: orange,
+                                        align: TextAlign.right,
+                                        size: 20,
+                                      ),
+                                      CustomText(
+                                        text: "ريال سعودي",
+                                        color: lightGray,
+                                        align: TextAlign.center,
+                                        size: 12,
+                                      ),
+                                    ],
                                   ),
-                                  CustomText(
-                                    text: "ريال سعودي",
-                                    color: lightGray,
-                                    align: TextAlign.center,
-                                    size: 12,
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      CustomText(
+                                        text: data.fullNameAr,
+                                        color: purple,
+                                        align: TextAlign.right,
+                                        size: 16,
+                                      ),
+                                      CustomText(
+                                        text: data.mobileNumber,
+                                        color: darkGray,
+                                        align: TextAlign.right,
+                                        size: 12,
+                                      ),
+                                      SizedBox(height: 20),
+                                    ],
                                   ),
                                 ],
                               ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  CustomText(
-                                    text: "خالد محمد أبو داوود",
-                                    color: purple,
-                                    align: TextAlign.right,
-                                    size: 16,
-                                  ),
-                                  CustomText(
-                                    text: "0566777417",
-                                    color: darkGray,
-                                    align: TextAlign.right,
-                                    size: 12,
-                                  ),
-                                  SizedBox(height: 20),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        //body
-                        collapsed: Container(
-                          color: cardLightBackground,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    CustomText(
-                                      text: "12345678901234  :  ",
-                                      color: darkGray,
-                                      align: TextAlign.right,
-                                      size: 14,
-                                    ),
-                                    CustomText(
-                                      text: "رقم التحويل  ",
-                                      color: lightTextGray,
-                                      align: TextAlign.right,
-                                      size: 12,
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 6),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    CustomText(
-                                      text: "20-09-2021 11:15:12.047  : ",
-                                      color: darkGray,
-                                      align: TextAlign.right,
-                                      size: 14,
-                                    ),
-                                    CustomText(
-                                      text: "تاريخ التحويل  ",
-                                      color: lightTextGray,
-                                      align: TextAlign.right,
-                                      size: 12,
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 6),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    CustomText(
-                                      text: "ركن الأضواء  :  ",
-                                      color: purple,
-                                      align: TextAlign.right,
-                                      size: 14,
-                                    ),
-                                    CustomText(
-                                      text: "اسم المنشأة  ",
-                                      color: lightTextGray,
-                                      align: TextAlign.right,
-                                      size: 12,
-                                    ),
-                                  ],
-                                )
-                              ],
                             ),
+                            //body
+                            collapsed: Container(
+                              color: cardLightBackground,
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        CustomText(
+                                          text: "${data.trxRef}  :  ",
+                                          color: darkGray,
+                                          align: TextAlign.right,
+                                          size: 14,
+                                        ),
+                                        CustomText(
+                                          text: "رقم التحويل  ",
+                                          color: lightTextGray,
+                                          align: TextAlign.right,
+                                          size: 12,
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 6),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        CustomText(
+                                          text: "${data.trxDate}  : ",
+                                          color: darkGray,
+                                          align: TextAlign.right,
+                                          size: 14,
+                                        ),
+                                        CustomText(
+                                          text: "تاريخ التحويل  ",
+                                          color: lightTextGray,
+                                          align: TextAlign.right,
+                                          size: 12,
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 6),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        CustomText(
+                                          text: "${data.corporateFullNameAr}  :  ",
+                                          color: purple,
+                                          align: TextAlign.right,
+                                          size: 14,
+                                        ),
+                                        CustomText(
+                                          text: "اسم المنشأة  ",
+                                          color: lightTextGray,
+                                          align: TextAlign.right,
+                                          size: 12,
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            hasIcon: false,
+                            tapHeaderToExpand: true,
                           ),
                         ),
-                        hasIcon: false,
-                        tapHeaderToExpand: true,
-                      ),
-                    ),
-                  );
-                }),
-          )
-        ],
+                      );
+                    }),
+              )
+            ],
+          );
+        },
       ),
     );
   }
@@ -263,7 +288,7 @@ class HomeScreen extends StatelessWidget {
         });
   }
 
-  Padding totalCount(BuildContext context) {
+  Padding totalCount(BuildContext context,totalamount) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
@@ -304,7 +329,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                         SizedBox(width: 4),
                         CustomText(
-                          text: "350,000",
+                          text: totalamount.toString(),
                           color: green,
                           size: 16,
                           wight: FontWeight.bold,

@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hala/provider/login_provider.dart';
 import 'package:hala/provider/main_provider.dart';
 import 'package:hala/provider/register_provider.dart';
-import 'package:hala/ui/login_Screen.dart';
-import 'package:hala/ui/register_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'provider/home_provider.dart';
-import 'ui/home_screen.dart';
 import 'ui/splash.dart';
 
 void main() {
@@ -24,8 +21,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => LogInProvider()),
         ChangeNotifierProvider(create: (_) => RegisterProvider()),
         ChangeNotifierProvider(create: (_) => HomeProvider()),
-
-
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
